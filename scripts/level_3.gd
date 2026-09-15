@@ -49,6 +49,8 @@ func _on_room_code_ready(code: String) -> void:
 	_display_room_code(code)
 
 func _on_connection_failed(_reason: String) -> void:
+	if MultiplayerManager.is_single_player:
+		return
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 
@@ -91,11 +93,9 @@ func _add_player(id: String) -> void:
 	player.position   = _spawn_points[_spawn_index % _spawn_points.size()]
 	_spawn_index += 1
 	add_child(player)
-	var cam: Camera2D = player.get_node("Camera2D")
-	cam.limit_left   = 0
-	cam.limit_top    = 0
-	cam.limit_right  = MAP_WIDTH  * TILE_WORLD
-	cam.limit_bottom = MAP_HEIGHT * TILE_WORLD
+	# Camera limits intentionally left at Godot's defaults (±10⁶) so
+	# the camera follows the player anywhere — including into the death pit
+	# — until the goal is reached.
 
 
 func _remove_player(id: String) -> void:
